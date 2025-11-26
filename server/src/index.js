@@ -3,7 +3,7 @@ import dotenv from 'dotenv'
 import cors from 'cors'
 import { createClient } from '@supabase/supabase-js'
 import authRoutes from './routes/authRoutes.js'
-import serviceRoutes from'./routes/serviceRoutes.js'
+import serviceRoutes from './routes/serviceRoutes.js'
 import bookingRoutes from './routes/bookingRoutes.js'
 
 //testvercel
@@ -14,8 +14,8 @@ app.use(express.json())
 
 // Conexión Supabase
 export const supabase = createClient(
-  process.env.SUPABASE_URL,
-  process.env.SUPABASE_KEY
+  process.env.SUPABASE_URL,
+  process.env.SUPABASE_KEY
 )
 
 // Rutas
@@ -23,4 +23,10 @@ app.use('/api/auth', authRoutes)
 app.use('/api/service', serviceRoutes)
 app.use('/api/booking', bookingRoutes)
 
-export default app;
+// 🚀 **LEVANTAR SERVIDOR**
+const PORT = process.env.PORT || 3000
+app.listen(PORT, () => {
+  console.log(`🔥 Server escuchando en http://localhost:${PORT}`)
+})
+
+export default app
