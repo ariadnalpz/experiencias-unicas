@@ -27,7 +27,7 @@ if ('serviceWorker' in navigator) {
   // Lo dejaremos ejecutándose al cargar la ventana para mayor compatibilidad.
   window.addEventListener('load', () => {
     // Asegúrate de que '/sw.js' es la ruta correcta de tu Service Worker
-    navigator.serviceWorker.register('/sw.js') 
+    navigator.serviceWorker.register('/service-worker.js') 
       .then(registration => {
         console.log('Service Worker registrado con éxito. Scope:', registration.scope);
       })

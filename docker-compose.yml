@@ -1,27 +1,39 @@
-version: "3.8"
-
 services:
-  front:
-    build:
-      context: .
-      dockerfile: Dockerfile.front
-    container_name: front_app
-    ports:
-      - "80:80"
-    depends_on:
-      - back
-
-  back:
+  backend:
     build:
       context: ./server
-      dockerfile: Dockerfile.back
-    container_name: back_app
+      dockerfile: Dockerfile
+    container_name: arroyo-server
     ports:
-      - "4000:4000"  
-    environment:
-      - NODE_ENV=production
-      - PORT=4000
-      - SUPABASE_URL=https://tyditglanavmupucjooo.supabase.co
-      - SUPABASE_KEY=sb_publishable_jbOYxa9fnQwrOJI2ptCutA_Fa0Up0Rl
-      - JWT_SECRET=supersecreto123
-      - JWT_EXPIRES_IN=1h
+      - "3001:3000"
+    env_file:
+      - ./server/.env
+    networks:
+      - app-network
+
+  frontend:
+    build:
+      context: .
+      dockerfile: Dockerfile.frontend
+    container_name: arroyo-client
+    ports:
+      - "5173:80"
+    networks:
+      - app-network
+
+  nginx:
+    image: nginx:alpine
+    container_name: arroyo-nginx
+    ports:
+      - "80:80"
+    volumes:
+      - ./nginx/default.conf:/etc/nginx/conf.d/default.conf
+    depends_on:
+      - backend
+      - frontend
+    networks:
+      - app-network
+
+networks:
+  app-network:
+    driver: bridge
