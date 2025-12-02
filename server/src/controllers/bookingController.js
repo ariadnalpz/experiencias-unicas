@@ -1,4 +1,4 @@
-import e from 'express'
+import express from 'express';
 import { supabase } from '../index.js'
 
 export const add = async (req, res) => {
