@@ -2,42 +2,37 @@ name: CI/CD Pipeline
 
 on:
   push:
-    branches: [ main, master ] #Activación de push
+    branches: [ main, master ] # Activación de push
 
 jobs:
   # 1. PRUEBAS DE INTEGRACION (CI)
-# 1. PRUEBAS DE INTEGRACION (CI)
   test:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
+        
+      # Configuración de Node.js solo una vez
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
           node-version: '20'
-          cache: 'npm'
-
+          
+      # Instalar dependencias y ejecutar pruebas DENTRO de la carpeta 'server'
       - name: Install dependencies and Run Tests in Server directory
         run: |
-          cd server 
           npm install
           npm test
+        working-directory: ./server # Ejecuta los comandos en la carpeta 'server'
 
-      - name: Post Setup Node.js 
-        if: always()
-        uses: actions/setup-node@v4
-        with:
-          node-version: '20'
-          cache: 'npm'
-
-  # 2. CONSTRUIR E ENVIAR LA IMAGEN AL REGISTRY (BUILD & PUSH)
+  # 2. CONSTRUIR Y ENVIAR LA IMAGEN AL REGISTRY (BUILD & PUSH)
   build-and-push:
     needs: test # Solo se ejecuta si las pruebas pasan
     runs-on: ubuntu-latest
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
+        
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v3
 
@@ -46,17 +41,18 @@ jobs:
         with:
           registry: ghcr.io
           username: ${{ github.actor }}
-          # Usando el secreto PAT que creaste en el Paso 1
           password: ${{ secrets.REGISTRY_TOKEN }}
 
       - name: Build and push Docker image
         uses: docker/build-push-action@v5
         with:
-          # Usaremos el contexto completo, ya que el docker-compose lo usa
-          context: .
+
+          context: ./server
           push: true
-          tags: ghcr.io/${{ github.repository }}/experiencias-unicas:latest
-          # Si tu Dockerfile y Dockerfile.frontend están en la raíz, esto es suficiente.
+          tags: |
+            ghcr.io/${{ github.repository }}/experiencias-unicas:latest
+            ghcr.io/${{ github.repository }}/experiencias-unicas:${{ github.sha }}
+
 
   # 3. DESPLIEGUE EN EL VPS (CD)
   deploy:
@@ -66,19 +62,26 @@ jobs:
       - name: Deploy to VPS via SSH
         uses: appleboy/ssh-action@master
         with:
-          # Usando los secretos del Paso 1 para conectarse al VPS
           host: ${{ secrets.SSH_HOST }}
           username: ${{ secrets.SSH_USER }}
           key: ${{ secrets.SSH_PRIVATE_KEY }}
+          port: 22 
           script: |
-            # 1. Cambiar a la ruta donde clonaste el proyecto
-            cd /home/deployer/experiencias-unicas 
-            # 2. Iniciar sesión en el Registry para descargar la nueva imagen (importante)
+            # 1. Cambiar a la ruta donde clonaste el proyecto (Verificado)
+            cd /home/deployer/experiencias-unicas
+            
+            # 2. Iniciar sesión en el Registry (CLAVE para Pull)
             echo "${{ secrets.REGISTRY_TOKEN }}" | docker login ghcr.io -u ${{ github.actor }} --password-stdin
+            
             # 3. Pull (descargar) la imagen más reciente
+            # Usamos 'docker compose' (con espacio) si tienes la última versión instalada en el VPS
             docker compose pull
-            # 4. Detener y reiniciar los contenedores para usar la nueva imagen
-            # (Usamos down/up para asegurar que todos los servicios de la app reinicien con la nueva imagen)
-            docker compose up -d 
-            # 5. Prueba final de salud
+            
+            # 4. Detener y reiniciar los contenedores (usará la nueva imagen)
+            docker compose up -d
+            
+            # 5. Prueba final de salud (Confirmación de despliegue)
             curl -sS http://127.0.0.1/api/health
+            
+            # 6. Limpieza para ahorrar espacio (Opcional, pero recomendado)
+            docker image prune -f
