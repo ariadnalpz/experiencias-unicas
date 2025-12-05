@@ -6,6 +6,7 @@ on:
 
 jobs:
   # 1. PRUEBAS DE INTEGRACION (CI)
+# 1. PRUEBAS DE INTEGRACION (CI)
   test:
     runs-on: ubuntu-latest
     steps:
@@ -17,12 +18,18 @@ jobs:
           node-version: '20'
           cache: 'npm'
 
-      - name: Install dependencies
-        run: npm install
+      - name: Install dependencies and Run Tests in Server directory
+        run: |
+          cd server 
+          npm install
+          npm test
 
-      - name: Run Supertest and Jest
-        # Corriendo las Pruebas de Integración (mínimo 3 pruebas)
-        run: npm test
+      - name: Post Setup Node.js 
+        if: always()
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
 
   # 2. CONSTRUIR E ENVIAR LA IMAGEN AL REGISTRY (BUILD & PUSH)
   build-and-push:
