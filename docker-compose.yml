@@ -2,28 +2,22 @@ version: '3.8'
 
 services:
   backend:
-    build:
-      context: ./server
-      dockerfile: Dockerfile
+    image: ghcr.io/ariadnalpz/experiencias-unicas/experiencias-unicas:latest
     container_name: arroyo-server
     ports:
-      - "3001:4000" # Mapeado al puerto 4000 interno corregido
+      - "3001:4000"
     env_file:
       - ./server/.env
     networks:
       - app-network
 
   frontend:
-    build:
-      context: ./src
-      dockerfile: Dockerfile
+    image: ghcr.io/ariadnalpz/experiencias-unicas/experiencias-unicas:latest
     container_name: arroyo-client
     ports:
-      - "5173:80"
+      - "3002:80"
     networks:
       - app-network
-    expose: 
-      - "3002"
 
   nginx:
     image: nginx:alpine
@@ -39,7 +33,7 @@ services:
       - app-network
   
   # ---------------------------------------------
-  # SERVICIOS DE MONITOREO (REQUISITO DESTACADO)
+  # SERVICIOS DE MONITOREO
   # ---------------------------------------------
   prometheus:
     image: prom/prometheus
@@ -64,7 +58,7 @@ services:
       - GF_SECURITY_ADMIN_USER=admin
       - GF_USERS_ALLOW_SIGN_UP=false
     ports:
-      - "3002:3000"
+      - "3003:3000"
     networks:
       - app-network
 
