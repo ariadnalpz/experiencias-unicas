@@ -61,7 +61,7 @@ export default function Home() {
                     </div>
                     <div style={{width:360}}>
                         <div className="card p-3">
-                            <h6>Resumen del MVP</h6>
+                            <h6>Resumen del MVPkkkkk</h6>
                             <p className="small text-muted">Registro, Inicio de sesión, catálogo, reservas, dashboard de anfitriones y de usuario.</p>
                         </div>
                     </div>
