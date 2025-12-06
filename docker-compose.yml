@@ -22,6 +22,8 @@ services:
       - "5173:80"
     networks:
       - app-network
+    expose: 
+      - "3002"
 
   nginx:
     image: nginx:alpine
