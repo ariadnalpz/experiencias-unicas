@@ -15,8 +15,8 @@ services:
 
   frontend:
     build:
-      context: .
-      dockerfile: Dockerfile.frontend
+      context: ./src
+      dockerfile: Dockerfile
     container_name: arroyo-client
     ports:
       - "5173:80"
