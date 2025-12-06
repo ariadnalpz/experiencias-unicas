@@ -69,7 +69,7 @@ export default function Login() {
     <div className="row justify-content-center">
       <div className="col-md-6">
         <div className="card p-4">
-          <h4>Iniciar sesión</h4>
+          <h4>Iniciarrrrrrrr sesión</h4>
           <form onSubmit={handleSubmit}>
             <InputField label="Email" name="email" type="email" value={formData.email} onChange={handleChange} />
             <InputField label="Contraseña" name="password" type="password" value={formData.password} onChange={handleChange} />
