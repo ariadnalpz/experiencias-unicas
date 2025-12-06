@@ -24,7 +24,7 @@ export const supabase = createClient(
 
 // Rutas públicas mínimas
 app.get('/api/health', (req, res) => {
-  return res.json({ status: 'okaaa', env: process.env.NODE_ENV || 'development' })
+  return res.json({ status: 'ok', env: process.env.NODE_ENV || 'development' })
 })
 
 // Rutas principales
