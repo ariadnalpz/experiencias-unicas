@@ -69,6 +69,8 @@ jobs:
           script: |
             # 1. Cambiar a la ruta donde clonaste el proyecto
             cd /home/deployer/experiencias-unicas 
+
+            git pull
             
             # 2. Iniciar sesión en el Registry para poder descargar la nueva imagen
             echo "${{ secrets.REGISTRY_TOKEN }}" | docker login ghcr.io -u ${{ github.actor }} --password-stdin
