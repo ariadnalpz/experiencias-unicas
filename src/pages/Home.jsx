@@ -55,7 +55,7 @@ export default function Home() {
             <div className="header-hero mb-5 p-4">
                 <div className="d-flex justify-content-between align-items-center">
                     <div>
-                        <h1>Arroyo Seco</h1>
+                        <h1>Arroyo Secoooooooo</h1>
                         <p className="lead text-muted">Conecta con anfitriones locales y reserva experiencias auténticas.</p>
                         <Link to="/services" className="btn btn-primary">Explorar Servicios</Link>
                     </div>
