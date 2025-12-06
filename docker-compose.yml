@@ -1,21 +1,23 @@
-version: '3.8'
-
 services:
   backend:
-    image: ghcr.io/ariadnalpz/experiencias-unicas/experiencias-unicas:latest
+    build:
+      context: ./server
+      dockerfile: Dockerfile
     container_name: arroyo-server
     ports:
-      - "3001:4000"
+      - "3001:3000"
     env_file:
       - ./server/.env
     networks:
       - app-network
 
   frontend:
-    image: ghcr.io/ariadnalpz/experiencias-unicas/experiencias-unicas:latest
+    build:
+      context: ./src
+      dockerfile: Dockerfile
     container_name: arroyo-client
     ports:
-      - "3002:80"
+      - "5173:80"
     networks:
       - app-network
 
@@ -29,50 +31,6 @@ services:
     depends_on:
       - backend
       - frontend
-    networks:
-      - app-network
-  
-  # ---------------------------------------------
-  # SERVICIOS DE MONITOREO
-  # ---------------------------------------------
-  prometheus:
-    image: prom/prometheus
-    container_name: arroyo-prometheus
-    volumes:
-      - ./prometheus/prometheus.yml:/etc/prometheus/prometheus.yml:ro
-    command:
-      - --config.file=/etc/prometheus/prometheus.yml
-      - --web.listen-address=:9090
-    ports:
-      - "9090:9090"
-    networks:
-      - app-network
-
-  grafana:
-    image: grafana/grafana
-    container_name: arroyo-grafana
-    volumes:
-      - ./grafana.ini:/etc/grafana/grafana.ini:ro
-    environment:
-      - GF_SECURITY_ADMIN_PASSWORD=admin
-      - GF_SECURITY_ADMIN_USER=admin
-      - GF_USERS_ALLOW_SIGN_UP=false
-    ports:
-      - "3003:3000"
-    networks:
-      - app-network
-
-  cadvisor:
-    image: gcr.io/cadvisor/cadvisor:latest
-    container_name: arroyo-cadvisor
-    volumes:
-      - /:/rootfs:ro
-      - /var/run:/var/run:rw
-      - /sys:/sys:ro
-      - /var/lib/docker/:/var/lib/docker:ro
-      - /dev/disk/:/dev/disk:ro
-    ports:
-      - "8080:8080"
     networks:
       - app-network
 
